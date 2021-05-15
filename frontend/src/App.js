@@ -3,6 +3,7 @@ import "./bootstrap.min.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { Container } from "react-bootstrap";
+import Homescreen from "./screens/Homescreen";
 
 function App() {
   return (
@@ -10,7 +11,7 @@ function App() {
       <Header />
       <Container>
         <div className="main py-3">
-          <h1>Swift Basket</h1>
+          <Homescreen />
         </div>
       </Container>
       <Footer />
