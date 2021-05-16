@@ -24,7 +24,7 @@ const ProductScreen = ({ match }) => {
       .catch((reason) => {
         console.log("Error in fetching ", reason);
       });
-  }, []);
+  }, [match]);
 
   return (
     <>
