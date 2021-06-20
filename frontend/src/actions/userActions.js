@@ -44,6 +44,7 @@ export const logout = () => (dispatch) => {
   dispatch({ type: User.USER_LOGOUT });
   dispatch({ type: User.USER_DETAILS_RESET });
   dispatch({ type: Order.ORDER_LIST_USER_RESET });
+  dispatch({ type: User.USER_LIST_RESET });
 };
 
 export const register = (name, email, password) => async (dispatch) => {
@@ -160,6 +161,122 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
         } = reason;
         dispatch({
           type: User.USER_UPDATE_PROFILE_FAIL,
+          payload: message ? message : "no err msg",
+        });
+      });
+  } catch (reason) {}
+};
+
+export const getUsers = () => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: User.USER_LIST_REQUEST,
+    });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    axios
+      .get(`/api/users`, config)
+      .then((res) => {
+        dispatch({
+          type: User.USER_LIST_SUCCESS,
+          payload: res.data,
+        });
+      })
+      .catch((reason) => {
+        const {
+          response: {
+            data: { message },
+          },
+        } = reason;
+        dispatch({
+          type: User.USER_LIST_FAIL,
+          payload: message ? message : "no err msg",
+        });
+      });
+  } catch (reason) {}
+};
+
+export const deleteUsers = (id) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: User.USER_DELETE_REQUEST,
+    });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    axios
+      .delete(`/api/users/${id}`, config)
+      .then((res) => {
+        dispatch({
+          type: User.USER_DELETE_SUCCESS,
+        });
+      })
+      .catch((reason) => {
+        const {
+          response: {
+            data: { message },
+          },
+        } = reason;
+        dispatch({
+          type: User.USER_DELETE_FAIL,
+          payload: message ? message : "no err msg",
+        });
+      });
+  } catch (reason) {}
+};
+
+export const updateUser = (user) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: User.USER_UPDATE_REQUEST,
+    });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    axios
+      .put(`/api/users/${user._id}`, user, config)
+      .then((res) => {
+        dispatch({
+          type: User.USER_UPDATE_SUCCESS,
+        });
+        dispatch({ type: User.USER_DETAILS_SUCCESS, payload: res.data });
+      })
+      .catch((reason) => {
+        const {
+          response: {
+            data: { message },
+          },
+        } = reason;
+        dispatch({
+          type: User.USER_UPDATE_FAIL,
           payload: message ? message : "no err msg",
         });
       });
