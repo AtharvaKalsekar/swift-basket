@@ -46,3 +46,103 @@ export const productDetailsAction = (id) => async (dispatch) => {
       });
   } catch (error) {}
 };
+
+export const deleteProductAction = (id) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: Product.PRODUCT_DELETE_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    axios
+      .delete(`/api/products/${id}`, config)
+      .then((res) => {
+        dispatch({ type: Product.PRODUCT_DELETE_SUCCESS, payload: res.data });
+      })
+      .catch((reason) => {
+        const {
+          response: {
+            data: { message },
+          },
+        } = reason;
+        dispatch({
+          type: Product.PRODUCT_DELETE_FAIL,
+          payload: message ? message : "no err msg",
+        });
+      });
+  } catch (error) {}
+};
+
+export const createProductAction = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: Product.PRODUCT_CREATE_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+    axios
+      .post(`/api/products`, config)
+      .then((res) => {
+        dispatch({ type: Product.PRODUCT_CREATE_SUCCESS, payload: res.data });
+      })
+      .catch((reason) => {
+        const {
+          response: {
+            data: { message },
+          },
+        } = reason;
+
+        dispatch({
+          type: Product.PRODUCT_CREATE_FAIL,
+          payload: message ? message : "no err msg",
+        });
+      });
+  } catch (error) {}
+};
+
+export const updateProductAction = (product) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: Product.PRODUCT_UPDATE_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+    axios
+      .put(`/api/products/${product._id}`, product, config)
+      .then((res) => {
+        dispatch({ type: Product.PRODUCT_UPDATE_SUCCESS, payload: res.data });
+      })
+      .catch((reason) => {
+        const {
+          response: {
+            data: { message },
+          },
+        } = reason;
+
+        dispatch({
+          type: Product.PRODUCT_UPDATE_FAIL,
+          payload: message ? message : "no err msg",
+        });
+      });
+  } catch (error) {}
+};
