@@ -161,3 +161,82 @@ export const listUserOrders = (orderId) => async (dispatch, getState) => {
       });
   } catch (reason) {}
 };
+
+export const listOrders = () => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: Order.ORDER_LIST_REQUEST,
+    });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    // console.log("update prod red -> ", user);
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    axios
+      .get(`/api/orders`, config)
+      .then((res) => {
+        dispatch({
+          type: Order.ORDER_LIST_SUCCESS,
+          payload: res.data,
+        });
+      })
+      .catch((reason) => {
+        const {
+          response: {
+            data: { message },
+          },
+        } = reason;
+        dispatch({
+          type: Order.ORDER_LIST_FAIL,
+          payload: message ? message : "no err msg",
+        });
+      });
+  } catch (reason) {}
+};
+
+export const deliverOrder = (orderId) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: Order.ORDER_DELIVER_REQUEST,
+    });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    // console.log("update prod red -> ", user);
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    axios
+      .put(`/api/orders/${orderId}/deliver`, config)
+      .then((res) => {
+        dispatch({
+          type: Order.ORDER_DELIVER_SUCCESS,
+        });
+      })
+      .catch((reason) => {
+        const {
+          response: {
+            data: { message },
+          },
+        } = reason;
+        dispatch({
+          type: Order.ORDER_DELIVER_FAIL,
+          payload: message ? message : "no err msg",
+        });
+      });
+  } catch (reason) {}
+};
