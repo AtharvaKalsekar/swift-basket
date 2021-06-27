@@ -1,28 +1,30 @@
 import { Product } from "../constants/productConstants.js";
 import axios from "axios";
 
-export const productListAction = () => async (dispatch) => {
-  try {
-    dispatch({ type: Product.PRODUCT_LIST_REQUEST });
-    axios
-      .get("/api/products")
-      .then((res) => {
-        dispatch({ type: Product.PRODUCT_LIST_SUCCESS, payload: res.data });
-      })
-      .catch((reason) => {
-        const {
-          response: {
-            data: { message },
-          },
-        } = reason;
-        console.log("Error in fetching ", reason);
-        dispatch({
-          type: Product.PRODUCT_LIST_FAIL,
-          payload: message ? message : "no err msg",
+export const productListAction =
+  (keyword = "", pageNumber = "") =>
+  async (dispatch) => {
+    try {
+      dispatch({ type: Product.PRODUCT_LIST_REQUEST });
+      axios
+        .get(`/api/products?keyword=${keyword}&pageNumber=${pageNumber}`)
+        .then((res) => {
+          dispatch({ type: Product.PRODUCT_LIST_SUCCESS, payload: res.data });
+        })
+        .catch((reason) => {
+          const {
+            response: {
+              data: { message },
+            },
+          } = reason;
+          console.log("Error in fetching ", reason);
+          dispatch({
+            type: Product.PRODUCT_LIST_FAIL,
+            payload: message ? message : "no err msg",
+          });
         });
-      });
-  } catch (error) {}
-};
+    } catch (error) {}
+  };
 
 export const productDetailsAction = (id) => async (dispatch) => {
   try {
@@ -141,6 +143,65 @@ export const updateProductAction = (product) => async (dispatch, getState) => {
 
         dispatch({
           type: Product.PRODUCT_UPDATE_FAIL,
+          payload: message ? message : "no err msg",
+        });
+      });
+  } catch (error) {}
+};
+
+export const reviewProductAction =
+  (productId, review) => async (dispatch, getState) => {
+    try {
+      dispatch({ type: Product.PRODUCT_REVIEW_REQUEST });
+
+      const {
+        userLogin: { userInfo },
+      } = getState();
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+      axios
+        .post(`/api/products/${productId}/review`, review, config)
+        .then((res) => {
+          dispatch({ type: Product.PRODUCT_REVIEW_SUCCESS, payload: res.data });
+        })
+        .catch((reason) => {
+          const {
+            response: {
+              data: { message },
+            },
+          } = reason;
+
+          dispatch({
+            type: Product.PRODUCT_REVIEW_FAIL,
+            payload: message ? message : "no err msg",
+          });
+        });
+    } catch (error) {}
+  };
+
+export const topProductsAction = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: Product.PRODUCT_TOP_REQUEST });
+
+    axios
+      .get(`/api/products/top`)
+      .then((res) => {
+        dispatch({ type: Product.PRODUCT_TOP_SUCCESS, payload: res.data });
+      })
+      .catch((reason) => {
+        const {
+          response: {
+            data: { message },
+          },
+        } = reason;
+
+        dispatch({
+          type: Product.PRODUCT_TOP_FAIL,
           payload: message ? message : "no err msg",
         });
       });

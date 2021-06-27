@@ -3,6 +3,8 @@ import { Navbar, Nav, Container, Row, Col, NavDropdown } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../actions/userActions";
+import { Route } from "react-router-dom";
+import SearchBox from "./SearchBox";
 
 const Header = () => {
   const userLogin = useSelector((state) => state.userLogin);
@@ -19,16 +21,26 @@ const Header = () => {
       <Navbar bg="dark" variant="dark" expand="lg" collapseOnSelect>
         <Container>
           <Row style={{ width: "100%" }}>
-            <Col xs={8}>
+            <Col xs={4}>
               <LinkContainer to="/">
                 <Navbar.Brand>Swift Basket</Navbar.Brand>
               </LinkContainer>
               <Navbar.Toggle aria-controls="basic-navbar-nav" />
             </Col>
-            <Col xs={4}>
+            <Col xs={8}>
               <Navbar.Collapse id="basic-navbar-nav">
+                <Row>
+                  <Col md={12}>
+                    <Route
+                      render={({ history }) => <SearchBox history={history} />}
+                    />
+                  </Col>
+                </Row>
                 <Nav className="ml-auto">
-                  <LinkContainer to="/cart">
+                  <LinkContainer
+                    to="/cart"
+                    style={{ marginRight: "3px", width: "80px" }}
+                  >
                     <Nav.Link>
                       <i className="fas fa-shopping-cart"></i>Cart
                     </Nav.Link>
